@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  stocks_linux_container:
+    build:
+      context: ./dockerfiles/ubuntu
+      dockerfile: Dockerfile
+    container_name: stocks_linux_container
+    tty: true # Keep the container running with an interactive shell
+    stdin_open: true
+    ports:
+      - "8080:8080" # Map container port 8080 to host port 8080
+    volumes:
+      - ./scripts:/scripts # Mount the local scripts directory into the container
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+    restart: unless-stopped
+    # stocks_scraper:
+    #   build:
+    #     context: ./dockerfiles/ubuntu
+    #     dockerfile: Dockerfile
+    #   container_name: stocks_web_scraper
+    #   volumes:
+    #     - ./:/app
+    #     - ./data:/app/data
+    #   environment:
+    #     - PYTHONUNBUFFERED=1
+    #     - SELENIUM_HEADLESS=true
+    #   restart: unless-stopped
+    # For debugging, you can uncomment these lines to get a command prompt instead of running main.py
+    # command: bash
+    # stdin_open: true
+    # tty: true 
+
+  stocks_postgres:
+    build:
+      context: ./dockerfiles/postgres
+      dockerfile: Dockerfile
+    container_name: stocks_postgres
+    environment:
+      POSTGRES_USER: stocks_user
+      POSTGRES_DB: stocks_db
+    volumes:
+      - stocks_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  stocks_minio:
+    image: minio/minio
+    container_name: stocks_minio
+    volumes:
+      - stocks_minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+volumes:
+  stocks_postgres_data:
+  stocks_minio_data:
+  scripts:
