@@ -1,37 +1,22 @@
 version: '3'
 
 services:
-  stocks_linux_container:
+  stocks_selenium:
     build:
-      context: ./dockerfiles/ubuntu
+      context: ./dockerfiles/selenium
       dockerfile: Dockerfile
-    container_name: stocks_linux_container
+    container_name: stocks_selenium
+    user: root # Run as root user to avoid permission issues
     tty: true # Keep the container running with an interactive shell
     stdin_open: true
     ports:
       - "8080:8080" # Map container port 8080 to host port 8080
+      - "4444:4444" # Map container port 4444 to host port 4444
     volumes:
       - ./scripts:/scripts # Mount the local scripts directory into the container
     environment:
       - DEBIAN_FRONTEND=noninteractive
     restart: unless-stopped
-    # stocks_scraper:
-    #   build:
-    #     context: ./dockerfiles/ubuntu
-    #     dockerfile: Dockerfile
-    #   container_name: stocks_web_scraper
-    #   volumes:
-    #     - ./:/app
-    #     - ./data:/app/data
-    #   environment:
-    #     - PYTHONUNBUFFERED=1
-    #     - SELENIUM_HEADLESS=true
-    #   restart: unless-stopped
-    # For debugging, you can uncomment these lines to get a command prompt instead of running main.py
-    # command: bash
-    # stdin_open: true
-    # tty: true 
-
   stocks_postgres:
     build:
       context: ./dockerfiles/postgres
@@ -45,7 +30,6 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
-
   stocks_minio:
     image: minio/minio
     container_name: stocks_minio

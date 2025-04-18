@@ -1,0 +1,15 @@
+selenium==4.12.0
+webdriver-manager==4.0.0
+beautifulsoup4==4.12.2
+requests==2.31.0
+pandas==2.2.1
+lxml==4.9.3
+python-dotenv==1.0.0 
+chromedriver-autoinstaller==0.6.4
+pg8000
+boto3==1.29.7
+awswrangler==3.5.2
+tenacity
+fsspec==2023.12.2
+s3fs==2023.12.2
+s3transfer==0.8.0
